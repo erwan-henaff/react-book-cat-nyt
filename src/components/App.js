@@ -1,17 +1,29 @@
 import React from 'react';
 import '../css/App.css';
 import Category  from './Category';
-import books from '../data/books.js'
+// import books from '../data/books.js'
+import api_key from '../env/env.js'
 
-console.log(books.results.lists);
 
 class App extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            comments : []
+            articles : []
         };
-        this.category = books.results.lists.map(el => {
+    }
+
+    async componentDidMount() {
+      let url = "https://api.nytimes.com/svc/books/v3/lists/overview.json?published_date=2018-09-12&api-key=" + api_key;
+  
+      const response = await fetch(url);
+      const newBooks = await response.json();
+      this.setState({ articles: newBooks.results.lists });
+    }
+
+    render () {
+
+      const category = this.state.articles.map(el => {
           return (
               <Category 
                   key={el.list_id} 
@@ -22,13 +34,10 @@ class App extends React.Component {
               </Category>
           );
         });
-    }
 
-    render () {
         return (
           <div className="App">
-            {this.category}
-
+            {category}
           </div>
         );
     }
